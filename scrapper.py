@@ -96,7 +96,7 @@ def get_pokemon_names(file='pokemon.txt') -> list:
 def scrape_pokemon_com_info_to_json(file='pokemon.json') -> bool:
     names = get_pokemon_names()
     with open(file, 'w') as json_file:
-        json_file.write("{\n\t\"pokemon\": [")
+        json_file.write("{\"pokemon\": [")
         for i, poke in enumerate(names):
             try:
                 print(poke)
@@ -134,26 +134,27 @@ def scrape_pokemon_com_info_to_json(file='pokemon.json') -> bool:
                 evolution_tree = [element.contents[0].string.rstrip().replace('\n', '').replace(' ', '') for element
                                   in soup.findAll('h3', {'class': 'match'})]
                 json_file.write(
-                    "\n\t{\n\t\t\"id\" : " + str(i + 1) + ',\n\t\t\"num\": ' + "\"" + id_number + "\"" +
-                    ',\n\t\t\"name\": ' + '\"' + poke + '\",\n\t\t\"img\": ' + '\"' + img_url(id_number) +
-                    '\",\n\t\t\"description\": ' + '\"' + description +
-                    '\",\n\t\t\"height\": ' + '\"' + height + '\",\n\t\t\"weight\": ' + '\"' + weight +
-                    '\",\n\t\t\"category\": ' + '\"' + category + '\",\n\t\t\"abilities\": ' + '[\n\t\t\t' +
-                    ''.join(["\"" + ability + "\"" + ",\n\t\t\t" if abilities.index(ability) != len(
+                    "{\"id\" : " + str(
+                        i + 1) + ',\"num\": ' + "\"" + id_number + "\"" + ',\"name\": ' + '\"' + poke + '\",\"img\": '
+                    + '\"' + img_url(
+                        id_number) + '\",\"description\": ' + '\"' + description + '\",\"height\": ' + '\"' + height +
+                    '\",\"weight\": ' + '\"' + weight +
+                    '\",\"category\": ' + '\"' + category + '\",\"abilities\": ' + '[' +
+                    ''.join(["\"" + ability + "\"" + "," if abilities.index(ability) != len(
                         abilities) - 1 else "\"" + ability + "\"" for
-                             ability in abilities]) + '\n\t\t],\n\t\t\"types\": ' + '[\n\t\t' +
-                    ''.join(["\t\"" + _type + "\"" + ",\n\t\t\t" if types.index(_type) != len(
-                        types) - 1 else "\t\"" + _type + "\"" for
-                             _type in types]) + '\n\t\t],\n\t\t\"weaknesses\": ' + '[\n\t\t' +
-                    ''.join(["\t\"" + weakness + "\"" + ",\n\t\t" if weaknesses.index(weakness) != len(
-                        weaknesses) - 1 else "\t\"" + weakness + "\"" for
-                             weakness in weaknesses]) + '\n\t\t' + (
-                        '],\n\t\t' if len(evolution_tree) > 1 else ']\t\t') + next_evolution(poke, evolution_tree))
-                json_file.write("\n\t}") if names.index(poke) == len(names) - 1 else json_file.write("\n\t},")
+                             ability in abilities]) + '],\"types\": ' + '[' +
+                    ''.join(["\"" + _type + "\"" + "," if types.index(_type) != len(
+                        types) - 1 else "\"" + _type + "\"" for
+                             _type in types]) + '],\"weaknesses\": ' + '[' +
+                    ''.join(["\"" + weakness + "\"" + "," if weaknesses.index(weakness) != len(
+                        weaknesses) - 1 else "\"" + weakness + "\"" for
+                             weakness in weaknesses]) + '' + (
+                        '],' if len(evolution_tree) > 1 else ']') + next_evolution(poke, evolution_tree))
+                json_file.write("}") if names.index(poke) == len(names) - 1 else json_file.write("},")
             except Exception as e:
                 print(str(e))
                 return False
-        json_file.write("\n]\n}")
+        json_file.write("]}")
         return True
 
 
@@ -181,8 +182,8 @@ def next_evolution(poke, tree) -> str:
             evolutions.append(branch)
 
     return '\"evolution_tree\": [' + ''.join([
-        "\n\t\t{\n\t\t\t\"name\": \"" + branch + '\"' + ('\n\t\t},\t\t' if evolutions.index(
-            branch) != len(evolutions) - 1 else '\n\t\t}') for branch in
+        "{\"name\": \"" + branch + '\"' + ('},' if evolutions.index(
+            branch) != len(evolutions) - 1 else '}') for branch in
         evolutions]) + ']' if len(tree) > 1 else ''
 
 
